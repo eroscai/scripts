@@ -67,7 +67,7 @@ filterExistImages() {
   done
 
   cd ".."
-  extractPath=$extractDir"extract-gt/"
+  extractPath=$extractDir"/extracted-gt/"
   if [[ ! -d $extractPath ]]; then
     mkdir $extractPath
   fi
