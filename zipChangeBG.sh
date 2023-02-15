@@ -25,7 +25,7 @@ fi
 echo "============================="
 echo "开始打包目录："$extractDir""
 
-previewDir="封面"
+previewDirName="封面"
 
 makeDir() {
   currentDir="$1"
@@ -43,12 +43,19 @@ makeDir() {
   if [[ -d $currentDir ]]; then
     cd "$currentDir"
 
+    previewDir="$currentDir""/""$previewDirName"
+    echo "$previewDir"
+    if [[ ! -d $previewDir ]]; then
+      echo "目录结构有误，请参考素材管理使用说明文档"
+      exit 6
+    fi
+
     i=0
     for file in *; do
       filePath="$currentDir""/""$file"
       ext="$(sed -r 's/.+(\..+)|.*/\1/' <<<"$file")"
       if [[ -f "$filePath" ]]; then
-        previewFilePath="$currentDir""/""$previewDir""/""$file"
+        previewFilePath="$previewDir""/""$file"
         if [[ -f $previewFilePath ]]; then
           newDir="$currentDir""/zip/""$i"
           mkdir -p "$newDir"
@@ -58,6 +65,9 @@ makeDir() {
           mv_no_override "$filePath" "$newFilePath"
           mv_no_override "$previewFilePath" "$newPreviewFilePath"
           ((i=i+1))
+        else
+          echo "原图与封面名称不一致：$filePath"
+          exit 5
         fi
       fi
     done
@@ -147,7 +157,7 @@ for directory in *; do
     for file in *; do
       filePath="$directoryPath""/""$file"
       if [[ -d $filePath ]]; then
-        if [[ $file == "zip" ]] || [[ $file == "$previewDir" ]]; then
+        if [[ $file == "zip" ]] || [[ $file == "$previewDirName" ]]; then
           rm -rf "$filePath"
         fi
       fi
