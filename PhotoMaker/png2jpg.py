@@ -2,6 +2,21 @@ import os
 from PIL import Image
 
 def convert_png_to_jpg(root_dir):
+    # 检查root_dir是否存在
+    if not os.path.exists(root_dir):
+        print(f"The specified directory does not exist: {root_dir}")
+        return
+
+    # 检查root_dir是否为一个目录
+    if not os.path.isdir(root_dir):
+        print(f"The specified path is not a directory: {root_dir}")
+        return
+    
+    # 检查目录是否为空
+    if not os.listdir(root_dir):
+        print(f"The directory is empty: {root_dir}")
+        return
+        
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith(".png"):
