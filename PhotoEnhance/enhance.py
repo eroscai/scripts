@@ -103,6 +103,8 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
     print(f'start {image_path}')
     files = {'sourceImage': ('image.jpg', img_byte_arr, 'image/jpeg')}
     headers = {'Authorization': f'Bearer {auth_token}'}
+    # data = {'destSize': destSize}
+    # response = requests.post(upload_url, files=files, data=data, headers=headers)
     response = requests.post(upload_url, files=files, headers=headers)
     data = response.json().get('data', {})
     task_id = data.get('taskid')
@@ -139,5 +141,6 @@ upload_url = 'xxx' # 修改为你的接收图片的服务器地址
 status_url = 'xxx' # 修改为查询任务状态的服务器地址
 download_directory = 'xxx' # 修改为你的下载目录
 auth_token = "xxx" # 修改为有效token
+# destSize = 4 # 可选2或4，代表倍数
 
 recurse_and_process_images(directory_path, upload_url, status_url, download_directory)
