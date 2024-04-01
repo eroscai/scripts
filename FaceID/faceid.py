@@ -18,11 +18,15 @@ def download_file(url, directory, path):
     
     local_filename = path.split('/')[-1]
     path = os.path.join(directory, local_filename)
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(path, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+    try:
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+    except requests.RequestException as e:
+        print(f"发生错误：{e}")
+
     return local_filename
 
 def check_task_status(task_id, url):
@@ -75,7 +79,7 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
 
     sizes = [
         [1024, 1024],
-        [1280, 768],
+        # [1280, 768],
         [768, 1280]
     ]
 
@@ -89,26 +93,32 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
             seed = random.randint(1, sys.maxsize - 1)  # 生成随机seed值
             data = {
                 'positivePrompt': style,
-                'imgWidth': size[0],
-                'imgHeight': size[1],
+                'img_width': size[0],
+                'img_height': size[1],
                 'seed': seed,
-                'num': 1
+                'num': 3
             }
-            response = requests.post(upload_url, files=files, data=data, headers=headers)
-            data = response.json().get('data', {})
-            task_id = data.get('taskid')
-            if task_id:
-                print(f'check {image_path}, task_id {task_id}')
-                download_urls = check_task_status(task_id, status_url)
-                if download_urls:
-                    for download_url in download_urls:
-                        download_path = os.path.join(directory, f"{file_name}_{size[0]}_{size[1]}_{i}.jpg")
-                        download_file(download_url, download_directory, download_path)
-                        print(f"Downloaded {download_url} to {download_path}")
+
+            try:
+                response = requests.post(upload_url, files=files, data=data, headers=headers)
+                data = response.json().get('data', {})
+                task_id = data.get('taskid')
+                if task_id:
+                    print(f'check {image_path}, task_id {task_id}')
+                    download_urls = check_task_status(task_id, status_url)
+                    if download_urls:
+                        j = 0
+                        for download_url in download_urls:
+                            j += 1
+                            download_path = os.path.join(directory, f"{file_name}_{size[0]}_{size[1]}_{i}_{j}.jpg")
+                            download_file(download_url, download_directory, download_path)
+                            print(f"Downloaded {download_url} to {download_path}")
+                    else:
+                        print(f"Task {task_id} timed out or failed.")
                 else:
-                    print(f"Task {task_id} timed out or failed.")
-            else:
-                print(f"Upload failed for {image_path}")
+                    print(f"Upload failed for {image_path}")
+            except requests.RequestException as e:
+                print(f"发生错误：{e}")
 
 
 def recurse_and_process_images(directory, upload_url, status_url, download_directory):
