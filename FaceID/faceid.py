@@ -6,7 +6,7 @@ import time
 import random
 import sys
 
-def download_file(url, directory, path):
+def download_file(url, directory, local_filename):
     """
     下载文件到指定目录。
 
@@ -16,7 +16,6 @@ def download_file(url, directory, path):
     if not os.path.exists(directory):
         os.makedirs(directory)  # 如果目录不存在，则创建目录
     
-    local_filename = path.split('/')[-1]
     path = os.path.join(directory, local_filename)
     try:
         with requests.get(url, stream=True) as r:
@@ -37,7 +36,7 @@ def check_task_status(task_id, url):
     :param url: 查询任务状态的 URL
     :return: 成功时的URL或None
     """
-    timeout = 30
+    timeout = 300
     start_time = time.time()
     headers = {'Authorization': f'Bearer {auth_token}'}
     while time.time() - start_time < timeout:
@@ -67,18 +66,38 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
     file_name = os.path.basename(image_path)
 
     styles = [
-        "Create an image of a stylish individual in a winter setting. The person has long, wavy hair and is wearing reflective ski goggles on their head. They are dressed in winter attire suitable for skiing, including a white jacket with a fur-lined hood, and a high-necked layer underneath. The background is a picturesque snowy landscape with pine trees and a cozy wooden chalet. The sky is clear and blue, indicating a crisp, sunny day. The individual is centered in the frame, looking into the camera with a relaxed yet poised expression",
-        "Create an image of a person outfitted for a winter adventure. They have a fashionable winter look, featuring oversized sunglasses and a trendy beanie with a noticeable logo. The beanie is white with a patterned design. They are wearing a glossy, metallic puffer jacket that reflects the light, giving a cool, silvery sheen. The background is a mountainous, snowy landscape with overcast skies, suggesting a cold winter day. Despite the chilly environment, the person's posture is confident, and their expression is poised, with a touch of sophistication",
-        "Generate an image of a happy person riding in a ski lift, dressed for skiing. The individual has a sporty look with a bright yellow and black ski jacket and is wearing large ski goggles with reflective multicolored lenses that cover the eyes. Their hair is casually styled, and they have a joyful smile. The environment inside the lift is cozy, contrasting with the snowy mountainous scenery visible through the windows. The picture captures a sense of height and exhilaration, evoking the excitement of skiing down the slopes",
-        "Visualize a dedicated athlete engaged in an intense workout inside a well-equipped gym. The individual is muscular and wearing a tight-fitting, short-sleeved gray athletic shirt that accentuates their physique, paired with dark workout shorts. They are seated, performing bicep curls with a heavy dumbbell, displaying prominent arm muscles and focus in their expression. The gym has a modern look with various pieces of equipment in the background, slightly blurred to keep the focus on the person. The lighting is dynamic, with high contrast, creating deep shadows that further define the muscles and contours of the individual's body",
-        "A muscular shirtless man with dark hair and a beard, sporting intricate tattoos on his arm and chest, wearing faded blue jeans, standing against a plain grey studio background, dramatic lighting accentuating his toned physique and tattoos, highly detailed facial features and muscles, photorealistic style, 8K resolution",
-        "A close-up portrait of a young man with curly brown hair and a beard, shirtless with water droplets on his skin, immersed in a blue-tiled swimming pool at night with trees in the background, realistic lighting and reflections in the water, highly detailed facial features and textures, cinematic shot, 8K resolution",
-        "Create a black and white full-length portrait of a person with strong, prominent features, including the waist. The facial features are clear, high-definition, and clear, with many details. The photo is black and white. The person has a relaxed and delicate hairstyle with a natural and elegant style. No hands, obvious facial features, expressive expression, exuding confidence, very confident and charming, wearing a simple tight-fitting long-sleeved turtleneck bottoming shirt, pure white or pure black tight-fitting, simple and versatile style, which gives The image adds bold yet casual elegance. The lighting is soft, creating an effect of light and shadow that accentuates the texture of the hair, the depth of the eyes, and the contours of the face. A simple solid color background with a simple background ensures that the person's face is the focus of the portrait, shot in a studio.",
-        "A male model wears black jeans and an elegant black turtleneck sweater, standing with his arms hanging naturally at his sides. Clear facial features, gray background, photo taken on Hasselblad film in the style of Peter Lindbergh. He has dark hair and light skin and exudes confidence as he poses for the camera. His gaze draws attention while also adding to the overall elegance of the portrait. This photo showcases the fine details of texture and fabric quality, creating a timeless look that adds depth to your visual narrative. Real photos, with strong sense of realism, highly detailed facial features and shooting lenses, 8K resolution",
+        "Create a sophisticated digital portrait that captures the essence of a professional, poised for success. The individual is styled in a sleek black blazer, its fabric catching the light with a subtle sheen, contrasted by the crisp, pure white of a well-pressed shirt. This attire exudes an air of classic elegance. The subject's expression is one of warm professionalism, with a smile that speaks to both confidence and congeniality. The backdrop suggests a high-end corporate environment, with a blurred hint of tasteful decor and ambient lighting that casts a gentle glow on the subject, highlighting their best features",
+        # "Generate an intricate digital headshot where the focus is on a person adorned in a textured blazer that whispers quality and style. The fabric has a herringbone pattern that adds depth to the image, paired with a tie that features a discreet, refined motif. The individual's face is the picture of friendly assurance, with a slight tilt of the head that invites trust and conveys leadership. The background is an understated gradient, perhaps the hint of a prestigious office wall, ensuring that the subject remains the star of this visual narrative. The lighting is masterful, with a chiaroscuro effect that adds dimensionality to the face and a touch of sparkle in the eyes that suggests ambition tempered with empathy.",
+        # "A half-length photo of a European city travel photo of a person standing on a mountaintop looking at the camera, natural night light, natural light source, behind the person is an overhead shot above the city, the person is wearing casual black clothes, the shooting angle of the person is similar to the city The shooting angle remains consistent, and the photo captures the position of the character's thigh. It has the most popular ins makeup in 2024 and the hairstyle is relatively delicate, creating a relaxed and refined atmosphere. The whole photo has a blue tone, with an ins style, a light hazy filter, an ins filter, and was taken casually with a mobile phone. There are beautiful clouds at the junction of the sky and the city. There are a lot of light pinks at the bottom of the sky. The sky is gradient. The contrast and saturation of the picture are low, and there are dry spots. The characters are clear, and the characters and the background are very harmonious. The person's posture is confident, his eyes are staring into the distance, and looking towards the camera. The light of the figures and the background are consistent, natural light, and the background features the silhouettes of buildings, suggesting the bustling cityscape as the day draws to a close. Taken with a mobile phone, the photos are very natural and very casual. The face is clear and the skin texture is clear,",
+        # "Generate a selfie of a young man sitting in the front seat of a car during prime time. The arm is stretched relatively long, and the selfie can be taken from the waist up. The arm is stretched relatively long, the expression is calm and happy, exquisite ins makeup, the popular ins makeup in 2024, confident smile, very confident, and confident about my appearance Very satisfied, looking directly at the camera, face with natural light, wearing a white round-neck pure cotton short-sleeved T-shirt, white pure cotton short-sleeved T-shirt, the color must be white, the weather is very good, the sun is bright, the sun shines through the car window , casting the shadow of the window frame on the character and inside the car. The sun hits the body, highlighting the texture of her hair and the contours of her facial features. Highly detailed facial features and muscles, realistic style, 8K resolution, facial details, clear skin texture",
+        # "Display beautiful and healthy muscles with clear facial features, face profile 45 degrees, intricate tattoos on arms and chest, faded blue jeans, smiling with a confident and generous expression, standing against a solid gray studio background, photo Photographed in the style of Peter Lindbergh on Hasselblad film. His gaze draws attention while also adding to the overall sense of personality in the portrait. This photo showcases the fine details of texture and fabric quality, creating a timeless look that adds depth to your visual narrative. Dramatic lighting highlights his toned physique and tattoos, highly detailed facial features and muscles, realistic style, 8K resolution",
+        # "A muscular man with a good figure, upper body, clear facial features, 45-degree facial profile, many complex tattoos on his body, large areas of tattoos on his body, a very cool expression, wearing dark pants, standing on a plain gray Studio background, photograph shot on Hasselblad film in the style of Peter Lindbergh. His gaze draws attention while also adding to the overall sense of personality in the portrait. This photo showcases the fine details of texture and fabric quality, creating a timeless look that adds depth to your visual narrative. Dramatic lighting highlights his toned physique and tattoos, highly detailed facial features and muscles, realistic style, 8K resolution",
+        # "Side view of a person looking at the camera, smiling happily, full body portrait, far scene, water droplets on the skin, immersed in a blue tiled swimming pool during the day, sunlight shining down, posture lying sideways by the pool, hair is wet, composition The characters in the picture occupy 10:3, and the background accounts for 10:7. The background is trees, a large scene, the scene is relatively large, long-distance shooting, realistic lights and reflections in the water, real photos, and a strong sense of reality. , highly detailed facial features and textures, cinematic footage, 8K resolution,",
+        # "Create a black and white full-length portrait of a person with strong, prominent features, including the waist. The facial features are clear, high-definition, and clear, with many details. The photo is black and white. The person has a relaxed and delicate hairstyle with a natural and elegant style. No hands, obvious facial features, expressive expression, exuding confidence, very confident and charming, wearing a simple tight-fitting long-sleeved turtleneck bottoming shirt, pure white or pure black tight-fitting, simple and versatile style, which gives The image adds bold yet casual elegance. The lighting is soft, creating an effect of light and shadow that accentuates the texture of the hair, the depth of the eyes, and the contours of the face. A simple solid color background with a simple background ensures that the person's face is the focus of the portrait, shot in a studio.",
+        # "A male model wears black jeans and an elegant black turtleneck sweater, standing with his arms hanging naturally at his sides. Clear facial features, gray background, photo taken on Hasselblad film in the style of Peter Lindbergh. He has dark hair and light skin and exudes confidence as he poses for the camera. His gaze draws attention while also adding to the overall elegance of the portrait. This photo showcases the fine details of texture and fabric quality, creating a timeless look that adds depth to your visual narrative. Real photos, with strong sense of realism, highly detailed facial features and shooting lenses, 8K resolution",
+    ]
+
+    seeds = [
+        3230133849045017490,
+        2938140724913030665,
+        8308845219164532816,
+        1254183629332398295,
+        1254494625968411477,
+        1635293158611111683,
+        421411319690495071,
+        4434649611110291428,
+        4187370821345107159,
+        5674012018125544512,
+        6404910287133541828,
+        949066771735059730,
+        2233950852209372780,
+        2861497503573541977,
+        8613744465976695141,
+        6076864550955409893
     ]
 
     sizes = [
-        [1024, 1024],
+        # [1024, 1024],
         # [1280, 768],
         [768, 1280]
     ]
@@ -87,38 +106,42 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
     for style in styles:
         i += 1
         for size in sizes:    
-            print(f'start {image_path}')
-            files = {'sourceImage': ('image.jpg', img_byte_arr, 'image/jpeg')}
-            headers = {'Authorization': f'Bearer {auth_token}'}
-            seed = random.randint(1, sys.maxsize - 1)  # 生成随机seed值
-            data = {
-                'positivePrompt': style,
-                'img_width': size[0],
-                'img_height': size[1],
-                'seed': seed,
-                'num': 3
-            }
+            for seed in seeds:
+                print(f'start {image_path}')
+                files = {'sourceImage': ('image.jpg', img_byte_arr, 'image/jpeg')}
+                headers = {'Authorization': f'Bearer {auth_token}'}
+                # seed = random.randint(1, sys.maxsize - 1)  # 生成随机seed值
+                data = {
+                    'positivePrompt': style,
+                    # 'negativePrompt': "(exposed breasts: 2)",
+                    'img_width': size[0],
+                    'img_height': size[1],
+                    'seed': seed,
+                    'num': 3
+                }
+                print(f"{data}")
 
-            try:
-                response = requests.post(upload_url, files=files, data=data, headers=headers)
-                data = response.json().get('data', {})
-                task_id = data.get('taskid')
-                if task_id:
-                    print(f'check {image_path}, task_id {task_id}')
-                    download_urls = check_task_status(task_id, status_url)
-                    if download_urls:
-                        j = 0
-                        for download_url in download_urls:
-                            j += 1
-                            download_path = os.path.join(directory, f"{file_name}_{size[0]}_{size[1]}_{i}_{j}.jpg")
-                            download_file(download_url, download_directory, download_path)
-                            print(f"Downloaded {download_url} to {download_path}")
+                try:
+                    response = requests.post(upload_url, files=files, data=data, headers=headers)
+                    data = response.json().get('data', {})
+                    task_id = data.get('taskid')
+                    if task_id:
+                        print(f'check {image_path}, task_id {task_id}')
+                        download_urls = check_task_status(task_id, status_url)
+                        if download_urls:
+                            j = 0
+                            for download_url in download_urls:
+                                j += 1
+                                download_directory_path = os.path.join(download_directory, f"{seed}")
+                                download_file_name = f"{file_name}_{seed}_w{size[0]}_h{size[1]}_{i}_{j}.jpg"
+                                download_file(download_url, download_directory_path, download_file_name)
+                                print(f"Downloaded {download_url} to {download_directory_path}")
+                        else:
+                            print(f"Task {task_id} timed out or failed.")
                     else:
-                        print(f"Task {task_id} timed out or failed.")
-                else:
-                    print(f"Upload failed for {image_path}")
-            except requests.RequestException as e:
-                print(f"发生错误：{e}")
+                        print(f"Upload failed for {image_path}")
+                except requests.RequestException as e:
+                    print(f"发生错误：{e}")
 
 
 def recurse_and_process_images(directory, upload_url, status_url, download_directory):
