@@ -66,7 +66,14 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
     file_name = os.path.basename(image_path)
 
     styles = [
-        "Create a sophisticated digital portrait that captures the essence of a professional, poised for success. The individual is styled in a sleek black blazer, its fabric catching the light with a subtle sheen, contrasted by the crisp, pure white of a well-pressed shirt. This attire exudes an air of classic elegance. The subject's expression is one of warm professionalism, with a smile that speaks to both confidence and congeniality. The backdrop suggests a high-end corporate environment, with a blurred hint of tasteful decor and ambient lighting that casts a gentle glow on the subject, highlighting their best features",
+        # "The image features a beautiful young woman, a tan sweater, standing in front of a building, hair pulled back in a bun. The woman is smiling, giving off a warm and friendly vibe. The scene captures a casual and comfortable moment, with the woman dressed in a cozy and stylish outfit.",
+        "(masterpiece:1.0) , (best quality:1.4) , (ultra highres:1.2) , (photorealistic:1.4) , (8k, RAW photo:1.2) , (soft focus:1.4) , posh, (sharp focus:1.4) , (korean:1.2) , (american:1.1) , detailed beautiful face, (detailed open blazer:1.4) , tie, beautiful white shiny humid skin",
+        # "full body photo ((extremely attractive) ) woman, long curly ginger hair, perfect eyes, (freckles:0. 2, light makeup, black blouse, long dress clothes, sitting on the end of her bed in her bedroom, gorgeous smile, bright sunlight coming through the windows, sheer curtains diffusing the sunlight . large depth of field, deep depth of field, highly detailed, highly detailed, 8k sharp focus, ultra photorealism",
+        # "HDR photo of beautiful young woman, from behind, looking over her shoulder, long bronze hair, light-blue eyes, fair complexion, (freckles:0.5) , light makeup, light colored lipstick, gorgeous off the shoulder blouse, standing in a very dark room, large windows in the background . High dynamic range, vivid, rich details, clear shadows and highlights, realistic, intense, enhanced contrast, highly detailed",
+        # "A Full body Photo High Definition Photograph of a joyous woman, holding a cellphone, happy and smiling, long bronze hair in a ponytail, light-blue eyes, fair complexion, (freckles:0.5) , sports bra, spandex shorts, inside a gym, walking towards 3rd viewer, glimmering skin . High dynamic range, vivid, rich details, clear shadows and highlights, realistic, intense, enhanced contrast, highly detailed, 8k sharp focus, ultra photorealism beauty, (Professionally advertised inside of a gym)",
+        # "breathtaking fit woman, Karina Doherty, big smile, long brunette hair with blonde highlights, hazel eyes, lightly tanned skin, wearing a tank top, braided hair, leaning next to a window at night . award-winning, professional, highly detailed",
+        # "((best quality) ), ((masterpiece) ), closeup of a beautiful french 20 year old woman, wearing a red summer dress, standing in a neon light alley at night in tokyo, absurdres, HDR",
+        # "Create a sophisticated headshot that captures the essence of a professional, poised for success. The individual is styled in a sleek black blazer, its fabric catching the light with a subtle sheen, contrasted by the crisp, pure white of a well-pressed shirt. This attire exudes an air of classic elegance. The subject's expression is one of warm professionalism, with a smile that speaks to both confidence and congeniality. The backdrop suggests a high-end corporate environment, with a blurred hint of tasteful decor and ambient lighting that casts a gentle glow on the subject, highlighting their best features. (Hands in trouser pockets: 2), (half body: 1.5)",
         # "Generate an intricate digital headshot where the focus is on a person adorned in a textured blazer that whispers quality and style. The fabric has a herringbone pattern that adds depth to the image, paired with a tie that features a discreet, refined motif. The individual's face is the picture of friendly assurance, with a slight tilt of the head that invites trust and conveys leadership. The background is an understated gradient, perhaps the hint of a prestigious office wall, ensuring that the subject remains the star of this visual narrative. The lighting is masterful, with a chiaroscuro effect that adds dimensionality to the face and a touch of sparkle in the eyes that suggests ambition tempered with empathy.",
         # "A half-length photo of a European city travel photo of a person standing on a mountaintop looking at the camera, natural night light, natural light source, behind the person is an overhead shot above the city, the person is wearing casual black clothes, the shooting angle of the person is similar to the city The shooting angle remains consistent, and the photo captures the position of the character's thigh. It has the most popular ins makeup in 2024 and the hairstyle is relatively delicate, creating a relaxed and refined atmosphere. The whole photo has a blue tone, with an ins style, a light hazy filter, an ins filter, and was taken casually with a mobile phone. There are beautiful clouds at the junction of the sky and the city. There are a lot of light pinks at the bottom of the sky. The sky is gradient. The contrast and saturation of the picture are low, and there are dry spots. The characters are clear, and the characters and the background are very harmonious. The person's posture is confident, his eyes are staring into the distance, and looking towards the camera. The light of the figures and the background are consistent, natural light, and the background features the silhouettes of buildings, suggesting the bustling cityscape as the day draws to a close. Taken with a mobile phone, the photos are very natural and very casual. The face is clear and the skin texture is clear,",
         # "Generate a selfie of a young man sitting in the front seat of a car during prime time. The arm is stretched relatively long, and the selfie can be taken from the waist up. The arm is stretched relatively long, the expression is calm and happy, exquisite ins makeup, the popular ins makeup in 2024, confident smile, very confident, and confident about my appearance Very satisfied, looking directly at the camera, face with natural light, wearing a white round-neck pure cotton short-sleeved T-shirt, white pure cotton short-sleeved T-shirt, the color must be white, the weather is very good, the sun is bright, the sun shines through the car window , casting the shadow of the window frame on the character and inside the car. The sun hits the body, highlighting the texture of her hair and the contours of her facial features. Highly detailed facial features and muscles, realistic style, 8K resolution, facial details, clear skin texture",
@@ -77,23 +84,26 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
         # "A male model wears black jeans and an elegant black turtleneck sweater, standing with his arms hanging naturally at his sides. Clear facial features, gray background, photo taken on Hasselblad film in the style of Peter Lindbergh. He has dark hair and light skin and exudes confidence as he poses for the camera. His gaze draws attention while also adding to the overall elegance of the portrait. This photo showcases the fine details of texture and fabric quality, creating a timeless look that adds depth to your visual narrative. Real photos, with strong sense of realism, highly detailed facial features and shooting lenses, 8K resolution",
     ]
 
+    # seeds = [
+    #     3230133849045017490,
+    #     2938140724913030665,
+    #     8308845219164532816,
+    #     1254183629332398295,
+    #     1254494625968411477,
+    #     1635293158611111683,
+    #     421411319690495071,
+    #     4434649611110291428,
+    #     4187370821345107159,
+    #     5674012018125544512,
+    #     6404910287133541828,
+    #     949066771735059730,
+    #     2233950852209372780,
+    #     2861497503573541977,
+    #     8613744465976695141,
+    #     6076864550955409893
+    # ]
     seeds = [
-        3230133849045017490,
-        2938140724913030665,
-        8308845219164532816,
-        1254183629332398295,
-        1254494625968411477,
-        1635293158611111683,
-        421411319690495071,
-        4434649611110291428,
-        4187370821345107159,
-        5674012018125544512,
-        6404910287133541828,
-        949066771735059730,
-        2233950852209372780,
-        2861497503573541977,
-        8613744465976695141,
-        6076864550955409893
+        4782660380427197381
     ]
 
     sizes = [
@@ -132,7 +142,8 @@ def post_image_and_process(image_path, upload_url, status_url, download_director
                             j = 0
                             for download_url in download_urls:
                                 j += 1
-                                download_directory_path = os.path.join(download_directory, f"{seed}")
+                                # download_directory_path = os.path.join(download_directory, f"{seed}")
+                                download_directory_path = download_directory
                                 download_file_name = f"{file_name}_{seed}_w{size[0]}_h{size[1]}_{i}_{j}.jpg"
                                 download_file(download_url, download_directory_path, download_file_name)
                                 print(f"Downloaded {download_url} to {download_directory_path}")
