@@ -104,11 +104,11 @@ def process_combined_tasks(tasks, initial_url, poll_url, extract_to):
         print("Completed processing for one combined task. Moving to the next.")
 
 # 示例文件路径
-images_file_path = '/Users/Eros/Documents/SpringTech/AI/PhotoMaker/images.json'
-prompts_file_path = '/Users/Eros/Documents/SpringTech/AI/PhotoMaker/prompts.json'
-initial_url = 'https://ydahj0iaza.execute-api.us-east-1.amazonaws.com/v1/ml/photomaker/run'
-poll_url = 'https://ydahj0iaza.execute-api.us-east-1.amazonaws.com/v1/ml/photomaker/task/result'
-extract_to = '/Users/Eros/Documents/SpringTech/AI/PhotoMaker/Output'
+images_file_path = ''
+prompts_file_path = ''
+initial_url = ''
+poll_url = ''
+extract_to = ''
 
 # 生成任务并处理
 tasks = generate_tasks(images_file_path, prompts_file_path)
