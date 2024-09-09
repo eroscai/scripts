@@ -142,6 +142,20 @@ def clean_directory(directory_path):
         else:
             print(f"跳过 {file_name}，因为它不是文件")
 
+# 定义一个函数，将 Excel 转换为 JSON
+def excel_to_json(excel_file_path, sheet_name, json_file_path):
+    # 使用 pandas 读取 Excel 文件中的指定工作表
+    df = pd.read_excel(excel_file_path, sheet_name=sheet_name, engine='openpyxl')
+
+    # 将 DataFrame 转换为 JSON 格式
+    json_data = df.to_json(orient='records', force_ascii=False)
+
+    # 将 JSON 数据保存到文件
+    with open(json_file_path, 'w', encoding='utf-8') as json_file:
+        json_file.write(json_data)
+
+    print(f"Excel 文件已成功转换为 JSON 文件: {json_file_path}")
+
 def save_to_excel(data, output_file):
     df = pd.DataFrame(data)
     df.to_excel(output_file, index=False, engine='openpyxl')
@@ -155,9 +169,12 @@ def main(directory, output_file, download_directory):
     print(f'Data has been successfully saved to {output_file}')
 
 if __name__ == '__main__':
-    directory = '/Users/Eros/Downloads/Ideogram/design/'  # 替换为你的JSON文件所在目录
+    directory = '/Users/Eros/Downloads/Ideogram/3d/'  # 替换为你的JSON文件所在目录
     download_directory = directory + '/Download/'
     output_file = directory + '/output.xlsx'
-    main(directory, output_file, download_directory)
+    # main(directory, output_file, download_directory)
 
     # clean_directory(directory)
+
+    json_file = directory + '/output.json'
+    excel_to_json(output_file, "Sheet1", json_file)
