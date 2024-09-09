@@ -33,7 +33,7 @@ def trim_size(width, height):
 
     return width, height
 
-def read_json_files(directory, download_directory):
+def read_json_files(directory, download_directory, cover_ids):
     json_files = [f for f in os.listdir(directory) if f.endswith('.json')]
     json_files.sort()  # 按照字母数字排序
 
@@ -59,14 +59,15 @@ def read_json_files(directory, download_directory):
                 success = download_image(cover_url, target_url)
                 # success = True
                 if success:
-                    data.append({
-                        "prompt": prompt,
-                        "aspect_ratio": result.get('aspect_ratio', ''),
-                        "cover_response_id": cover_id,
-                        'width': width,
-                        'height': height,
-                        'filename': filename
-                    })
+                    if cover_id not in cover_ids:                        
+                        data.append({
+                            "prompt": prompt,
+                            "aspect_ratio": result.get('aspect_ratio', ''),
+                            "cover_response_id": cover_id,
+                            'width': width,
+                            'height': height,
+                            'filename': filename
+                        })
                     file_index += 1
 
     return data
@@ -102,17 +103,61 @@ def download_image(url, save_path):
         print(f"下载失败，状态码: {response.status_code}")
         return False
 
+def extract_fields(file_path, sheet_name, field_name):
+    # 使用 pandas 读取 Excel 文件
+    df = pd.read_excel(file_path, sheet_name=sheet_name, engine='openpyxl')
+    
+    # 检查是否存在 'cover_response_id' 列
+    if field_name in df.columns:
+        # 提取 'cover_response_id' 列，去除 NaN 值并将其转换为列表
+        filed_values = df[field_name].dropna().tolist()
+        return filed_values
+    else:
+        print(f"没有找到 {field_name} 列")
+        return []
+    
+# 定义一个函数来遍历目录并删除不需要的文件
+def clean_directory(directory_path):
+    response_file = directory_path + 'output.xlsx'
+    download_file_path = directory_path + 'Download'
+    filenames = extract_fields(response_file, 'Sheet1', 'filename')
+
+    # 遍历目录中的所有文件
+    for file_name in os.listdir(download_file_path):
+        # 获取完整的文件路径
+        file_path = os.path.join(download_file_path, file_name)
+
+        # 检查是否为文件（忽略子目录）
+        if os.path.isfile(file_path):
+            # 判断文件名是否在给定的数组中
+            if file_name not in filenames:
+                # 如果不在数组中，删除文件
+                try:
+                    os.remove(file_path)
+                    print(f"文件 {file_name} 已被删除")
+                except Exception as e:
+                    print(f"删除文件 {file_name} 时出错: {e}")
+            else:
+                print(f"文件 {file_name} 保留")
+        else:
+            print(f"跳过 {file_name}，因为它不是文件")
+
 def save_to_excel(data, output_file):
     df = pd.DataFrame(data)
     df.to_excel(output_file, index=False, engine='openpyxl')
 
 def main(directory, output_file, download_directory):
-    data = read_json_files(directory, download_directory)
+    response_file = '/Users/Eros/Downloads/Ideogram/3d/output.xlsx'
+    cover_ids = extract_fields(response_file, 'Sheet1', 'cover_response_id')
+
+    data = read_json_files(directory, download_directory, cover_ids)
     save_to_excel(data, output_file)
     print(f'Data has been successfully saved to {output_file}')
 
 if __name__ == '__main__':
-    directory = '/Users/Eros/Downloads/Ideogram/3d/'  # 替换为你的JSON文件所在目录
+    directory = '/Users/Eros/Downloads/Ideogram/design/'  # 替换为你的JSON文件所在目录
     download_directory = directory + '/Download/'
     output_file = directory + '/output.xlsx'
     main(directory, output_file, download_directory)
+
+    # clean_directory(directory)
