@@ -70,6 +70,7 @@ def read_json_files(directory, download_directory, cover_ids):
                         data = {
                             "prompt": prompt,
                             'model_version': model_version,
+                            'model_sub_style': style,
                             "aspect_ratio": result.get('aspect_ratio', ''),
                             "cover_response_id": cover_id,
                             'width': width,
@@ -187,9 +188,10 @@ def main(directory, download_directory, cover_ids):
 
     print(f'Data has been successfully saved to {output_file1} {output_file2}')
 
+style = 'Realistic'
 if __name__ == '__main__':
     main_directory = '/Users/Eros/Downloads/Ideogram-week/'
-    directory = main_directory + 'realistic/'  # 替换为你的JSON文件所在目录
+    directory = main_directory + style  # 替换为你的JSON文件所在目录
     download_directory = directory + '/Download'
 
     output_files = main_directory + 'outputs'
