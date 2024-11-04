@@ -56,7 +56,7 @@ def read_json_files(directory, download_directory, cover_ids):
                 cover_id = result.get('cover_response_id', '')
                 model_version = result.get('model_version', '')
                 is_v2 = model_version == 'V_1_5'
-                cover_url = 'https://ideogram.ai/assets/progressive-image/balanced/response/' + cover_id
+                cover_url = 'https://ideogram.ai/assets/image/lossless/response/' + cover_id
                 filename = f'{file_index}.jpg'
                 if is_v2:
                     target_url = download_directory + '/v2/' + filename
@@ -121,18 +121,28 @@ def download_image(url, save_path):
         print(f"下载失败，状态码: {response.status_code}")
         return False
 
-def extract_fields(file_path, sheet_name, field_name):
-    # 使用 pandas 读取 Excel 文件
-    df = pd.read_excel(file_path, sheet_name=sheet_name, engine='openpyxl')
+def extract_fields(file_path, field_name):
+    # 使用 pandas 读取 Excel 文件的所有 sheet
+    xls = pd.ExcelFile(file_path, engine='openpyxl')
     
-    # 检查是否存在 'cover_response_id' 列
-    if field_name in df.columns:
-        # 提取 'cover_response_id' 列，去除 NaN 值并将其转换为列表
-        filed_values = df[field_name].dropna().tolist()
-        return filed_values
-    else:
-        print(f"没有找到 {field_name} 列")
-        return []
+    # 初始化一个空列表来存储所有 sheet 中的字段值
+    all_field_values = []
+    
+    # 遍历每一个 sheet
+    for sheet_name in xls.sheet_names:
+        # 读取当前 sheet 的数据
+        df = pd.read_excel(xls, sheet_name=sheet_name)
+        
+        # 检查是否存在指定的列
+        if field_name in df.columns:
+            # 提取指定列，去除 NaN 值并将其转换为列表
+            field_values = df[field_name].dropna().tolist()
+            # 将当前 sheet 的结果追加到总列表中
+            all_field_values.extend(field_values)
+        else:
+            print(f"在 sheet '{sheet_name}' 中没有找到 {field_name} 列")
+    
+    return all_field_values
     
 # 定义一个函数来遍历目录并删除不需要的文件
 def clean_directory(directory_path):
@@ -188,9 +198,9 @@ def main(directory, download_directory, cover_ids):
 
     print(f'Data has been successfully saved to {output_file1} {output_file2}')
 
-style = 'Realistic'
+style = 'Anime'
 if __name__ == '__main__':
-    main_directory = '/Users/Eros/Downloads/Ideogram-week/'
+    main_directory = '/Users/Eros/Downloads/Ideogram-Month/'
     directory = main_directory + style  # 替换为你的JSON文件所在目录
     download_directory = directory + '/Download'
 
@@ -199,9 +209,10 @@ if __name__ == '__main__':
     cover_ids = []
     for excel_file in excel_files:
         excel_file_path = output_files + '/' + excel_file
-        ids = extract_fields(excel_file_path, 'Sheet1', 'cover_response_id')
-        cover_ids.append(ids)
+        ids = extract_fields(excel_file_path, 'cover_response_id')
+        cover_ids.extend(ids)
 
+    # print(f'cover_id 总{len(cover_ids)} {cover_ids}')
     main(directory, download_directory, cover_ids)
 
     # clean_directory(directory)
